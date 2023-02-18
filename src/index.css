@@ -146,8 +146,10 @@ body {
   transform: scale(1.01);
 }
 
-.board-square:hover {
-  background-color: #a8a7a7;
+@media (hover: hover) {
+  .board-square:hover {
+    background-color: #a8a7a7;
+  }
 }
 
 .square-0, .square-1, .square-2 {
