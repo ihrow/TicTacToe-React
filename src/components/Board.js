@@ -67,12 +67,8 @@ function Board(props) {
   const winner = isWinner(board, player)
 
   let statusMessage = winner
-    ? `${
-        currentPlayer === props.firstPlayer
-          ? props.secondPlayer
-          : props.firstPlayer
-      } won!`
-    : <span><span className="player">{currentPlayer}</span>'s move</span>
+    ? <span><span className="player">{currentPlayer === props.firstPlayer ? props.secondPlayer : props.firstPlayer}</span> won!</span> 
+    : <span><span className="player">{currentPlayer}</span>'s move.</span>
 
   if (tie) {
     statusMessage = 'It is a tie!'
