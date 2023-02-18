@@ -22,9 +22,7 @@ function App() {
 
   return (
     <div className="container">
-      <div className="header">
-        <h1 className="title">TicTacToe</h1>
-      </div>
+      <h1 className="title">TicTacToe</h1>
       <div className="start-game">
         
         <PlayerForm 
