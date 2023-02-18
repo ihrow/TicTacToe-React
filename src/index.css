@@ -1,0 +1,168 @@
+body {
+  margin: 0;
+  background-color: #333333;
+  color: #f4f4f4;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+:root {
+  --index: calc(1vw + 1vh);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.title {
+  font-size: calc(2rem + var(--index) * 2.5);
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.status {
+  font-size: 2rem;
+  font-weight: 900;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: calc(300px + var(--index) * 2.5);
+  height: calc(300px + var(--index) * 2.5);
+}
+
+.gameboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2rem;
+}
+
+.button {
+  text-decoration: none;
+  background-color: #f4f1f1;
+  border: none;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: rgb(56, 56, 56);
+  padding: 15px 32px;
+  display: inline-block;
+  margin: 10px 0px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.button:hover {
+  transform: scale(1.1);
+}
+
+.button:active {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(4px);
+}
+
+.restart-button {
+  margin-top: 2.75rem;
+}
+
+.back-button {
+  margin-top: 1rem;
+}
+
+.board-square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #f4f4f4;
+  font-size: 3rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.animated-appear {
+  animation-name: text-appear;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes text-appear {
+  from {
+    opacity: 0.2;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.player-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.player-form-input {
+  margin: 0.5rem 0.2rem;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+  width: calc(var(--index) * 13);
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+}
+
+.player-form-input:focus {
+  outline: none;
+  border-color: #fff;
+}
+
+.player-form-input:hover {
+  transform: scale(1.01);
+}
+
+.board-square:hover {
+  background-color: #a8a7a7;
+}
+
+.square-0, .square-1, .square-2 {
+  border-top: none;
+}
+
+.square-0, .square-3, .square-6 {
+  border-left: none;
+}
+
+.square-2, .square-5, .square-8 {
+  border-right: none;
+}
+
+.square-6, .square-7, .square-8 {
+  border-bottom: none;
+}
+
