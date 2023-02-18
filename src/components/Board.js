@@ -72,7 +72,7 @@ function Board(props) {
           ? props.secondPlayer
           : props.firstPlayer
       } won!`
-    : `${currentPlayer}'s turn:`
+    : <span><span className="player">{currentPlayer}</span>'s move</span>
 
   if (tie) {
     statusMessage = 'It is a tie!'
