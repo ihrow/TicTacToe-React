@@ -72,7 +72,7 @@ body {
   background-color: #f4f1f1;
   border: none;
   font-weight: 700;
-  font-size: calc(1rem + var(--index) * 0.5);
+  font-size: 1.2rem;
   color: rgb(56, 56, 56);
   padding: 15px 32px;
   display: inline-block;
