@@ -1,5 +1,3 @@
-React Tic-Tac-Toe is a web application built with React that allows users to play the classic game of Tic-Tac-Toe against another player.
-
 ## Getting Started
 
 To get started with React Tic-Tac-Toe, follow these steps:
