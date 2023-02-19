@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Board from './components/Board'
 import PlayerForm from './components/PlayerForm'
 
@@ -7,9 +7,13 @@ function App() {
   const [style, setStyle] = useState({})
 
   const [players, setPlayers] = useState({
-    player1: '',
-    player2: '',
+    player1: window.localStorage.getItem('players') ? JSON.parse(window.localStorage.getItem('players')).player1 : '',
+    player2: window.localStorage.getItem('players') ? JSON.parse(window.localStorage.getItem('players')).player2 : '',
   })
+
+  useEffect(() => {
+    window.localStorage.setItem('players', JSON.stringify(players))
+  }, [players])
 
   const handleStartGame = () => {
     if (players.player1 === '' || players.player2 === '') {
