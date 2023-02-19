@@ -3,7 +3,7 @@ function Square(props) {
 
     return (
         <div 
-            className={`board-square square-${props.squareN}`} 
+            className={`board-square square-${props.squareN} ${props.isVisible ? 'animated-appear' : ''}`} 
             onClick={props.onClick}
         >
             <span>
