@@ -165,10 +165,6 @@ body {
   }
 }
 
-.player {
-  color: red;
-}
-
 .square-0, .square-1, .square-2 {
   border-top: none;
 }
@@ -183,5 +179,14 @@ body {
 
 .square-6, .square-7, .square-8 {
   border-bottom: none;
+}
+
+.player-status {
+  color: red;
+}
+
+.switch-side-status {
+  color: rgb(1, 209, 1);
+  font-size: 0.5em;
 }
 

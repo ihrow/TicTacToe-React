@@ -1,12 +1,18 @@
 import { useState } from 'react'
+import useWindowSize from 'react-use/lib/useWindowSize'
 import Square from './Square'
 import Confetti from 'react-confetti'
 import winningLines from '../models/Board.models'
 
 function Board(props) {
   const [board, setBoard] = useState(Array(9).fill(null))
-  const [player, setPlayer] = useState('❌')
-  const [currentPlayer, setCurrentPlayer] = useState(props.firstPlayer)
+  const { width, height } = useWindowSize()
+
+  const [player, setPlayer] = useState({
+    player: '❌',
+    currentPlayer: props.firstPlayer,
+    firstMove: props.secondPlayer
+  })
 
   const isWinner = (board) => {
     for (let i = 0; i < winningLines.length; i++) {
@@ -24,19 +30,25 @@ function Board(props) {
     }
     setBoard((prev) => {
       return prev.map((square, pos) => {
-        return pos === position ? player : square
+        return pos === position ? player.player : square
       })
     })
-    setPlayer((prev) => (prev === '❌' ? '⭕' : '❌'))
-    setCurrentPlayer((prev) =>
-      prev === props.firstPlayer ? props.secondPlayer : props.firstPlayer
-    )
+    setPlayer(prev => {
+      return {
+        ...prev,
+        player: prev.player === '❌' ? '⭕' : '❌',
+        currentPlayer: prev.currentPlayer === props.firstPlayer ? props.secondPlayer : props.firstPlayer
+      }
+    })
   }
 
   const handleRestartGame = () => {
     setBoard(Array(9).fill(null))
-    setPlayer('❌')
-    setCurrentPlayer(props.firstPlayer)
+    setPlayer({
+      player: '❌',
+      currentPlayer: player.firstMove,
+      firstMove: player.firstMove === props.firstPlayer ? props.secondPlayer : props.firstPlayer
+    })
   }
 
   const handleBack = () => {
@@ -49,16 +61,18 @@ function Board(props) {
 
   let statusMessage = winner ? (
     <span>
-      <span className="player">
-        {currentPlayer === props.firstPlayer
+      <span className="player-status">
+        {player.currentPlayer === props.firstPlayer
           ? props.secondPlayer
           : props.firstPlayer}
-      </span>{' '}
-      won!
+      </span>
+      <span> won!<br/> </span>
+      <span className='switch-side-status'>Switching sides...</span>
     </span>
+    
   ) : (
     <span>
-      <span className="player">{currentPlayer}</span>'s move.
+      <span className="player-status">{player.currentPlayer}</span>'s move.
     </span>
   )
 
@@ -68,7 +82,7 @@ function Board(props) {
 
   return (
     <div className="gameboard">
-      {winner ? <Confetti /> : null}
+      {winner ? <Confetti width={width} height={height} /> : null}
       <div className="status">{statusMessage}</div>
       <div className="board">
         {board.map((square, pos) => {
