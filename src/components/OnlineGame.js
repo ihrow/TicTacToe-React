@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { PlayerForm } from './PlayerForm'
 import { useNavigate } from 'react-router-dom'
 import { ws, clientId, gameId } from '../utils/serverConnect'
-import { OnlineBoard } from './OnlineBoard'
+import { Board } from './Board'
 
 export const OnlineGame = (props) => {
   const navigate = useNavigate()
@@ -36,9 +36,9 @@ export const OnlineGame = (props) => {
     let gameJoinId = gameId === null ? gameInputId : gameId
     if (gameJoinId.length === 0) {
       alert('Please enter a game ID')
-      return
+      return;
     }
-
+    
     const payLoad = {
       method: 'join',
       clientId: clientId,
@@ -65,7 +65,7 @@ export const OnlineGame = (props) => {
       board: board,
     }
     ws.send(JSON.stringify(payLoad))
-  }
+  }   
 
   useEffect(() => {
     const payLoad = {
@@ -90,12 +90,13 @@ export const OnlineGame = (props) => {
 
       {clients.length === 2 ? (
         <div className="start-game" onClick={handleMove}>
-          <OnlineBoard
+          <Board
+            firstPlayer={clients[0].name}
+            secondPlayer={clients[1].name}
             board={board}
             setBoard={props.setBoard}
-            playerNumber={props.playerNumber}
-            firstPlayer={props.firstPlayer}
-            secondPlayer={props.secondPlayer}
+            player={props.player}
+            setPlayer={props.setPlayer}
           />
           <button className="button back-button" onClick={handleBack}>
             Back

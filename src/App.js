@@ -18,10 +18,14 @@ function App() {
   const [clients, setClients] = useState([])
   const [gameId, setGameId] = useState(null)
   const [board, setBoard] = useState(Array(9).fill(null))
-  const [playerNumber, setPlayerNumber] = useState({})
+  const [player, setPlayer] = useState({
+    player: '❌',
+    currentPlayer: players.player1,
+    firstMove: players.player1
+  })
 
   useEffect(() => {
-    serverConnect(setClients, setGameId, setBoard, setPlayerNumber)
+    serverConnect(setClients, setGameId, setBoard, setPlayer, player)
   }, [])
 
   useEffect(() => {
@@ -48,7 +52,8 @@ function App() {
               setPlayers={setPlayers}
               board={board}
               setBoard={setBoard}
-              playerNumber={playerNumber}
+              player={player}
+              setPlayer={setPlayer}
             />
           }
         />

@@ -2,7 +2,13 @@ export let clientId = null
 export let ws = new WebSocket('ws://localhost:8080')
 export let gameId = null
 
-export function serverConnect(setClients, setGameId, setBoard, setPlayerNumber) {
+export function serverConnect(
+  setClients,
+  setGameId,
+  setBoard,
+  setPlayer,
+  players
+) {
   ws.onmessage = (message) => {
     const response = JSON.parse(message.data)
     switch (response.method) {
@@ -59,6 +65,16 @@ export function serverConnect(setClients, setGameId, setBoard, setPlayerNumber) 
         console.log('Move successfully made: ', response.game.board)
         const gameBoard = response.game.board
         setBoard(gameBoard)
+        setPlayer((prev) => {
+          return {
+            ...prev,
+            player: prev.player === '❌' ? '⭕' : '❌',
+            currentPlayer:
+              prev.currentPlayer === response.game.clients[0]?.name
+                ? response.game.clients[1]?.name
+                : response.game.clients[0]?.name,
+          }
+        })
 
         break
 
@@ -66,7 +82,7 @@ export function serverConnect(setClients, setGameId, setBoard, setPlayerNumber) 
         console.log('Client successfully disconnected: ', response.clients)
         setClients(response.clients)
         alert(response.disconnectedClient + ' has disconnected')
-      break
+        break
 
       default:
         break

@@ -47,9 +47,9 @@ wsServer.on('request', (request) => {
 
         games[gameId].clients.push({
           clientId: clientId,
+          name: result.player,
+          sign: '❌',
         })
-        games[gameId].clients[0].name = result.player
-        games[gameId].clients[0].number = 1
 
         const payLoad = {
           method: 'create',
@@ -91,7 +91,7 @@ wsServer.on('request', (request) => {
             client.name = result.player
           }
         })
-        game.clients[1].number = '❌'
+        game.clients[0].number = '⭕'
 
         const payLoad = {
           method: 'join',

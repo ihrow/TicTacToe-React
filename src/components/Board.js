@@ -8,11 +8,9 @@ export function Board(props) {
   const board = props.board
   const { width, height } = useWindowSize()
 
-  const [player, setPlayer] = useState({
-    player: '❌',
-    currentPlayer: props.firstPlayer,
-    firstMove: props.secondPlayer
-  })
+  const player = props.player
+
+
 
   const isWinner = (board) => {
     for (let i = 0; i < winningLines.length; i++) {
@@ -34,21 +32,11 @@ export function Board(props) {
       })
     })
     console.log('handleSquareClick', board)
-    handlePlayerChange()
   }
-
-  const handlePlayerChange = () => {
-    setPlayer(prev => {
-      return {
-        ...prev,
-        player: prev.player === '❌' ? '⭕' : '❌',
-        currentPlayer: prev.currentPlayer === props.firstPlayer ? props.secondPlayer : props.firstPlayer
-      }
-    })}
 
   const handleRestartGame = () => {
     props.setBoard(Array(9).fill(null))
-    setPlayer({
+    props.setPlayer({
       player: '❌',
       currentPlayer: player.firstMove,
       firstMove: player.firstMove === props.firstPlayer ? props.secondPlayer : props.firstPlayer
