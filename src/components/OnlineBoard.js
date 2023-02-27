@@ -3,15 +3,27 @@ import useWindowSize from 'react-use/lib/useWindowSize'
 import Square from './Square'
 import Confetti from 'react-confetti'
 import winningLines from '../models/Board.models'
+import { ws, clientId, gameId } from '../utils/serverConnect'
 
-export function Board(props) {
+export function OnlineBoard(props) {
   const board = props.board
   const { width, height } = useWindowSize()
+  const clientId = props.clientId
+  const clients = props.clients
+  const client = clients.find((client) => client.clientId === clientId)
+  const playerNumber = client.number
+  console.log('clientId', clientId)
+  console.log('playerNumber', playerNumber)
+
+  const [players, setPlayers] = useState({
+    player1: '❌',
+    player2: '⭕',
+  })
 
   const [player, setPlayer] = useState({
     player: '❌',
     currentPlayer: props.firstPlayer,
-    firstMove: props.secondPlayer
+    firstMove: props.secondPlayer,
   })
 
   const isWinner = (board) => {
@@ -30,28 +42,28 @@ export function Board(props) {
     }
     props.setBoard((prev) => {
       return prev.map((square, pos) => {
-        return pos === position ? player.player : square
+        return pos === position
+          ? player.currentPlayer === props.firstPlayer
+          : square
       })
     })
-    console.log('handleSquareClick', board)
-    handlePlayerChange()
+    const payLoad = {
+        method: 'move',
+        clientId: clientId,
+        gameId: gameId,
+        position: position,
+    }
   }
-
-  const handlePlayerChange = () => {
-    setPlayer(prev => {
-      return {
-        ...prev,
-        player: prev.player === '❌' ? '⭕' : '❌',
-        currentPlayer: prev.currentPlayer === props.firstPlayer ? props.secondPlayer : props.firstPlayer
-      }
-    })}
 
   const handleRestartGame = () => {
     props.setBoard(Array(9).fill(null))
     setPlayer({
       player: '❌',
       currentPlayer: player.firstMove,
-      firstMove: player.firstMove === props.firstPlayer ? props.secondPlayer : props.firstPlayer
+      firstMove:
+        player.firstMove === props.firstPlayer
+          ? props.secondPlayer
+          : props.firstPlayer,
     })
   }
 
@@ -65,10 +77,13 @@ export function Board(props) {
           ? props.secondPlayer
           : props.firstPlayer}
       </span>
-      <span> won!<br/> </span>
-      <span className='switch-side-status'>Switching sides...</span>
+      <span>
+        {' '}
+        won!
+        <br />{' '}
+      </span>
+      <span className="switch-side-status">Switching sides...</span>
     </span>
-    
   ) : (
     <span>
       <span className="player-status">{player.currentPlayer}</span>'s move.
@@ -104,4 +119,3 @@ export function Board(props) {
     </div>
   )
 }
-

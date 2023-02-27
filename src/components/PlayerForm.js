@@ -1,4 +1,4 @@
-const PlayerForm = ({style, players, setPlayers}) => {
+export const PlayerForm = ({amountOfPlayers, players, setPlayers}) => {
     
     const handlePlayerChange = (e) => {
       setPlayers({
@@ -8,10 +8,10 @@ const PlayerForm = ({style, players, setPlayers}) => {
     }
 
     return (
-        <form style={style} className="player-form">
+        <form className="player-form">
           <div>
             <label className="player-form-input" htmlFor="player1">
-              ❌ Player 1:{' '}
+              {amountOfPlayers === 2 ? '❌ Player 1:' : '👤 Your name: '}
             </label>
             <input
               type="text"
@@ -22,7 +22,8 @@ const PlayerForm = ({style, players, setPlayers}) => {
               onChange={handlePlayerChange}
             />
           </div>
-          <div>
+          {amountOfPlayers === 2 ? (
+            <div>
             <label className="player-form-input" htmlFor="player2">
               ⭕ Player 2:{' '}
             </label>
@@ -35,8 +36,7 @@ const PlayerForm = ({style, players, setPlayers}) => {
               onChange={handlePlayerChange}
             />
           </div>
+          ) : null}
         </form>
     )
 }
-
-export default PlayerForm

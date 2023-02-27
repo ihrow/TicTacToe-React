@@ -1,58 +1,60 @@
 import { useState, useEffect } from 'react'
-import Board from './components/Board'
-import PlayerForm from './components/PlayerForm'
+import { StartScreen } from './components/StartScreen'
+import { LocalGameWelcome } from './components/LocalGameWelcome'
+import { OnlineGame } from './components/OnlineGame'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { serverConnect } from './utils/serverConnect'
+import { LocalGame } from './components/LocalGame'
 
 function App() {
-  const [game, setGame] = useState(false)
-  const [style, setStyle] = useState({})
-
   const [players, setPlayers] = useState({
-    player1: window.localStorage.getItem('players') ? JSON.parse(window.localStorage.getItem('players')).player1 : '',
-    player2: window.localStorage.getItem('players') ? JSON.parse(window.localStorage.getItem('players')).player2 : '',
+    player1: window.localStorage.getItem('players')
+      ? JSON.parse(window.localStorage.getItem('players')).player1
+      : '',
+    player2: window.localStorage.getItem('players')
+      ? JSON.parse(window.localStorage.getItem('players')).player2
+      : '',
   })
+  const [clients, setClients] = useState([])
+  const [gameId, setGameId] = useState(null)
+  const [board, setBoard] = useState(Array(9).fill(null))
+  const [playerNumber, setPlayerNumber] = useState({})
+
+  useEffect(() => {
+    serverConnect(setClients, setGameId, setBoard, setPlayerNumber)
+  }, [])
 
   useEffect(() => {
     window.localStorage.setItem('players', JSON.stringify(players))
   }, [players])
 
-  const handleStartGame = () => {
-    if (players.player1 === '' || players.player2 === '') {
-      alert('Please enter player names')
-      return
-    }
-    setGame(true)
-    setStyle({ display: 'none' })
-  }
-
   return (
-    <div className="container">
-      <h1 className="title">TicTacToe</h1>
-      <div className="start-game">
-        
-        <PlayerForm 
-          style={style}
-          players={players}
-          setPlayers={setPlayers}
+    <Router>
+      <Routes>
+        <Route path="/" element={<StartScreen />} />
+        <Route
+          path="/local"
+          element={
+            <LocalGameWelcome players={players} setPlayers={setPlayers} />
+          }
         />
-        
-        <button
-          style={style}
-          className="button start-button"
-          onClick={handleStartGame}
-        >
-          Start Game
-        </button>
-
-        {game ? (
-          <Board
-            setGame={setGame}
-            setStyle={setStyle}
-            firstPlayer={players.player1}
-            secondPlayer={players.player2}
-          />
-        ) : null}
-      </div>
-    </div>
+        <Route
+          path="/online"
+          element={
+            <OnlineGame
+              gameId={gameId}
+              clients={clients}
+              players={players}
+              setPlayers={setPlayers}
+              board={board}
+              setBoard={setBoard}
+              playerNumber={playerNumber}
+            />
+          }
+        />
+        <Route path="/local/game" element={<LocalGame players={players} />} />
+      </Routes>
+    </Router>
   )
 }
 
