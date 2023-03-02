@@ -76,7 +76,7 @@ body {
 }
 
 .back-button {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .gameboard {
@@ -190,3 +190,59 @@ body {
   font-size: 0.5em;
 }
 
+.connected-clients {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2rem;
+  margin-bottom: 2rem;
+  font-size: calc(0.5rem + var(--index) * 0.5);
+}
+
+.room-management {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2rem;
+  margin-bottom: 2rem;
+  font-size: calc(0.5rem + var(--index) * 0.5);
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.id-copy-button {
+  background-color: #f4f1f1;
+  border: none;
+  font-weight: 700;
+  font-size: calc(0.5rem + var(--index) * 0.5);
+  color: rgb(56, 56, 56);
+  padding: 15px 32px;
+  margin-left: 2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.id-copy-button:hover {
+  transform: scale(1.1);
+}
+
+.id-input {
+  background-color: #333;
+  border: 1px solid #444;
+  color: #fff;
+  font-size: calc(0.5rem + var(--index) * 0.5);
+  padding: 0.5rem;
+  margin-right: 1rem;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}

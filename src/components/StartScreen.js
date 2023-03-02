@@ -1,14 +1,14 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom'
 
 export function StartScreen() {
   const navigate = useNavigate()
 
   const handleStartLocalGame = () => {
-    navigate("/local")
+    navigate('/local')
   }
 
   const handleStartOnlineGame = () => {
-    navigate("/online")
+    navigate('/online')
   }
 
   return (

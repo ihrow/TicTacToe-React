@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import useWindowSize from 'react-use/lib/useWindowSize'
 import Square from './Square'
 import Confetti from 'react-confetti'
@@ -8,9 +7,8 @@ export function Board(props) {
   const board = props.board
   const { width, height } = useWindowSize()
 
-  const player = props.player
-
-
+  const currentPlayer = props.currentPlayer
+  const style = props.isBoardDisabled ? { pointerEvents: 'none' } : {}
 
   const isWinner = (board) => {
     for (let i = 0; i < winningLines.length; i++) {
@@ -28,38 +26,43 @@ export function Board(props) {
     }
     props.setBoard((prev) => {
       return prev.map((square, pos) => {
-        return pos === position ? player.player : square
+        return pos === position ? currentPlayer.symbol : square
       })
     })
-    console.log('handleSquareClick', board)
-  }
-
-  const handleRestartGame = () => {
-    props.setBoard(Array(9).fill(null))
-    props.setPlayer({
-      player: '❌',
-      currentPlayer: player.firstMove,
-      firstMove: player.firstMove === props.firstPlayer ? props.secondPlayer : props.firstPlayer
-    })
+    if (!props.isOnline) {
+      props.setCurrentPlayer((prev) => {
+        return {
+          ...prev,
+          symbol: prev.symbol === '❌' ? '⭕' : '❌',
+          playerName:
+            prev.currentPlayer === props.firstPlayer
+              ? props.secondPlayer
+              : props.firstPlayer,
+        }
+      })
+    }
   }
 
   const tie = board.every((square) => square !== null)
-  const winner = isWinner(board, player)
+  const winner = isWinner(board, currentPlayer)
 
   let statusMessage = winner ? (
     <span>
       <span className="player-status">
-        {player.currentPlayer === props.firstPlayer
+        {currentPlayer.playerName === props.firstPlayer
           ? props.secondPlayer
           : props.firstPlayer}
       </span>
-      <span> won!<br/> </span>
-      <span className='switch-side-status'>Switching sides...</span>
+      <span>
+        {' '}
+        won!
+        <br />{' '}
+      </span>
+      <span className="switch-side-status">Switching sides...</span>
     </span>
-    
   ) : (
     <span>
-      <span className="player-status">{player.currentPlayer}</span>'s move.
+      <span className="player-status">{currentPlayer.playerName}</span>'s move.
     </span>
   )
 
@@ -71,7 +74,7 @@ export function Board(props) {
     <div className="gameboard">
       {winner ? <Confetti width={width} height={height} /> : null}
       <div className="status">{statusMessage}</div>
-      <div className="board">
+      <div className="board" style={style}>
         {board.map((square, pos) => {
           return (
             <Square
@@ -86,10 +89,14 @@ export function Board(props) {
           )
         })}
       </div>
-      <button className="button restart-button" onClick={handleRestartGame}>
-        New Game
-      </button>
+      {winner || tie ? (
+        <button
+          className="button restart-button"
+          onClick={props.handleResetGame}
+        >
+          Restart
+        </button>
+      ) : null}
     </div>
   )
 }
-

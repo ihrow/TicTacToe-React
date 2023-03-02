@@ -6,84 +6,76 @@ export function serverConnect(
   setClients,
   setGameId,
   setBoard,
-  setPlayer,
-  players
+  setCurrentPlayer,
+  setIsBoardDisabled,
+  currentPlayer
 ) {
   ws.onmessage = (message) => {
     const response = JSON.parse(message.data)
     switch (response.method) {
       case 'connect':
         clientId = response.clientId
-        console.log('Client successfully connected: ', clientId)
         break
       case 'create': {
         clientId = response.clientId
         gameId = response.game.id
 
         setGameId(gameId)
-        console.log(
-          'Game successfully created: ',
-          response.game.id,
-          ' with ',
-          response.game.player1,
-          ' as player 1 and ',
-          response.game.board,
-          ' as board'
-        )
+        setIsBoardDisabled(true)
+
         break
       }
-
       case 'join':
         const game = response.game
-        clientId = response.clientId
-        setClients(game.clients)
-        console.log(game.clients)
-
         if (game.clients.length >= 3) {
-          console.log('Game is full')
+          alert('Game is full')
           return
-        } else if (response.game.clients.length === 2) {
-          console.log(
-            'Game successfully joined: ',
-            response.game.id,
-            ' with ',
-            response.game.player2,
-            ' as player 2'
-          )
-        } else if (response.game.clients.length === 1) {
-          console.log(
-            'Game successfully joined: ',
-            response.game.id,
-            ' with ',
-            response.game.player1,
-            ' as player 1'
-          )
         }
+        if (clientId === response.clientId) {
+          setIsBoardDisabled(false)
+        }
+
+        setClients(game.clients)
+        setCurrentPlayer((prev) => {
+          return {
+            ...prev,
+            playerName: game.clients[1]?.name,
+          }
+        })
+        setBoard(Array(9).fill(null))
         break
 
       case 'move':
-        console.log('Move successfully made: ', response.game.board)
         const gameBoard = response.game.board
-        setBoard(gameBoard)
-        setPlayer((prev) => {
+
+        if (currentPlayer.playerName === response.movePlayer) {
+          setBoard(gameBoard)
+          setCurrentPlayer((prev) => {
+            return {
+              ...prev,
+              symbol: prev.symbol === '❌' ? '⭕' : '❌',
+              playerName:
+                prev.playerName === response.game.clients[0]?.name
+                  ? response.game.clients[1]?.name
+                  : response.game.clients[0]?.name,
+            }
+          })
+          setIsBoardDisabled((prev) => !prev)
+        }
+        break
+      case 'resetGame':
+        setBoard(Array(9).fill(null))
+        setCurrentPlayer((prev) => {
           return {
             ...prev,
-            player: prev.player === '❌' ? '⭕' : '❌',
-            currentPlayer:
-              prev.currentPlayer === response.game.clients[0]?.name
-                ? response.game.clients[1]?.name
-                : response.game.clients[0]?.name,
+            symbol: '❌',
           }
         })
-
         break
-
       case 'disconnect':
-        console.log('Client successfully disconnected: ', response.clients)
         setClients(response.clients)
         alert(response.disconnectedClient + ' has disconnected')
         break
-
       default:
         break
     }

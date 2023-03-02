@@ -7,7 +7,7 @@ import { serverConnect } from './utils/serverConnect'
 import { LocalGame } from './components/LocalGame'
 
 function App() {
-  const [players, setPlayers] = useState({
+  const [playerNames, setPlayerNames] = useState({
     player1: window.localStorage.getItem('players')
       ? JSON.parse(window.localStorage.getItem('players')).player1
       : '',
@@ -18,19 +18,27 @@ function App() {
   const [clients, setClients] = useState([])
   const [gameId, setGameId] = useState(null)
   const [board, setBoard] = useState(Array(9).fill(null))
-  const [player, setPlayer] = useState({
-    player: '❌',
-    currentPlayer: players.player1,
-    firstMove: players.player1
+  const [currentPlayer, setCurrentPlayer] = useState({
+    symbol: '❌',
+    playerName: playerNames.player1,
+    firstMove: playerNames.player1,
   })
+  const [isBoardDisabled, setIsBoardDisabled] = useState(false)
 
   useEffect(() => {
-    serverConnect(setClients, setGameId, setBoard, setPlayer, player)
-  }, [])
+    serverConnect(
+      setClients,
+      setGameId,
+      setBoard,
+      setCurrentPlayer,
+      setIsBoardDisabled,
+      currentPlayer
+    )
+  }, [currentPlayer])
 
   useEffect(() => {
-    window.localStorage.setItem('players', JSON.stringify(players))
-  }, [players])
+    window.localStorage.setItem('players', JSON.stringify(playerNames))
+  }, [playerNames])
 
   return (
     <Router>
@@ -39,7 +47,10 @@ function App() {
         <Route
           path="/local"
           element={
-            <LocalGameWelcome players={players} setPlayers={setPlayers} />
+            <LocalGameWelcome
+              playerNames={playerNames}
+              setPlayerNames={setPlayerNames}
+            />
           }
         />
         <Route
@@ -48,16 +59,26 @@ function App() {
             <OnlineGame
               gameId={gameId}
               clients={clients}
-              players={players}
-              setPlayers={setPlayers}
+              playerNames={playerNames}
               board={board}
+              currentPlayer={currentPlayer}
+              isBoardDisabled={isBoardDisabled}
               setBoard={setBoard}
-              player={player}
-              setPlayer={setPlayer}
+              setCurrentPlayer={setCurrentPlayer}
+              setPlayerNames={setPlayerNames}
             />
           }
         />
-        <Route path="/local/game" element={<LocalGame players={players} />} />
+        <Route
+          path="/local/game"
+          element={
+            <LocalGame
+              currentPlayer={currentPlayer}
+              playerNames={playerNames}
+              setCurrentPlayer={setCurrentPlayer}
+            />
+          }
+        />
       </Routes>
     </Router>
   )

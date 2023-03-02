@@ -36,7 +36,7 @@ wsServer.on('request', (request) => {
       case 'create': {
         const clientId = result.clientId
         const gameId = uuidv4()
-        
+
         games[gameId] = {
           id: gameId,
           player1: result.player,
@@ -48,7 +48,6 @@ wsServer.on('request', (request) => {
         games[gameId].clients.push({
           clientId: clientId,
           name: result.player,
-          sign: '❌',
         })
 
         const payLoad = {
@@ -57,7 +56,8 @@ wsServer.on('request', (request) => {
           clientId: clientId,
           playerName: result.player,
         }
-        const clientConnection = clients[clientId].connection
+
+        const clientConnection = clients[clientId]?.connection
         clientConnection.send(JSON.stringify(payLoad))
 
         return
@@ -67,6 +67,10 @@ wsServer.on('request', (request) => {
         clients[clientId].name = result.player
 
         const gameId = result.gameId
+        if (!games[gameId]) {
+          console.log('Game does not exist')
+          return
+        }
         const game = games[gameId]
 
         if (game.clients.length >= 2) {
@@ -91,13 +95,12 @@ wsServer.on('request', (request) => {
             client.name = result.player
           }
         })
-        game.clients[0].number = '⭕'
 
         const payLoad = {
           method: 'join',
           game: game,
-          clientId: clientId,
           clients: game.clients,
+          clientId: clientId,
         }
 
         game.clients.forEach((client) => {
@@ -109,6 +112,7 @@ wsServer.on('request', (request) => {
       }
       case 'move': {
         const clientId = result.clientId
+        console.log('clientId MOVED', clientId)
         const gameId = result.gameId
         const game = games[gameId]
         game.board = result.board
@@ -116,6 +120,9 @@ wsServer.on('request', (request) => {
         const payLoad = {
           method: 'move',
           game: games[gameId],
+          movePlayer: game.clients.filter(
+            (client) => client.clientId === clientId
+            )[0]?.name,
         }
 
         setTimeout(() => {
@@ -131,16 +138,18 @@ wsServer.on('request', (request) => {
         const clientId = result.clientId
         const game = games[result.gameId]
 
-        const savedGameClients = game.clients
+        const savedGameClients = game?.clients
+        if (!savedGameClients) {
+          return
+        }
         const disconnectedClient = game.clients.filter(
           (client) => client.clientId === clientId
         )[0]
 
-
         game.clients = game.clients.filter(
           (client) => client.clientId !== clientId
         )
-        
+
         const payLoad = {
           method: 'disconnect',
           clients: game.clients,
@@ -161,6 +170,19 @@ wsServer.on('request', (request) => {
         }
         const game = games[gameId]
         game.board = result.board
+        break
+      }
+      case 'resetGame': {
+        const gameId = result.gameId
+        if (!games[gameId]) {
+          return
+        }
+        const game = games[gameId]
+
+        game.clients.forEach((client) => {
+          const clientConnection = clients[client.clientId].connection
+          clientConnection.send(JSON.stringify(result))
+        })
         break
       }
       default:

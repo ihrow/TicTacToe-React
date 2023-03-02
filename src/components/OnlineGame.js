@@ -3,15 +3,16 @@ import { PlayerForm } from './PlayerForm'
 import { useNavigate } from 'react-router-dom'
 import { ws, clientId, gameId } from '../utils/serverConnect'
 import { Board } from './Board'
+import Clipboard from 'react-clipboard.js'
 
 export const OnlineGame = (props) => {
   const navigate = useNavigate()
   const [gameInputId, setGameInputId] = useState('')
-  const players = props.players
+  const playerNames = props.playerNames
   const clients = props.clients
   const board = props.board
 
-  const handleBack = () => {
+  const handleDisconnect = () => {
     const payLoad = {
       method: 'disconnect',
       clientId: clientId,
@@ -21,11 +22,15 @@ export const OnlineGame = (props) => {
     navigate('/')
   }
 
+  const handleBack = () => {
+    navigate('/')
+  }
+
   const handleCreateRoom = () => {
     const payLoad = {
       method: 'create',
       clientId: clientId,
-      player: players.player1,
+      player: playerNames.player1,
       board: board,
     }
 
@@ -36,14 +41,14 @@ export const OnlineGame = (props) => {
     let gameJoinId = gameId === null ? gameInputId : gameId
     if (gameJoinId.length === 0) {
       alert('Please enter a game ID')
-      return;
+      return
     }
-    
+
     const payLoad = {
       method: 'join',
       clientId: clientId,
       gameId: gameJoinId,
-      player: players.player1,
+      player: playerNames.player1,
     }
     console.log(clients)
     ws.send(JSON.stringify(payLoad))
@@ -56,8 +61,16 @@ export const OnlineGame = (props) => {
     setGameInputId(e.target.value)
   }
 
+  const handleResetGame = () => {
+    const payLoad = {
+      method: 'resetGame',
+      gameId: gameId || gameInputId,
+    }
+    ws.send(JSON.stringify(payLoad))
+  }
+
   const handleMove = () => {
-    console.log('handleMove', board)
+    console.log('clientId', clientId)
     const payLoad = {
       method: 'move',
       clientId: clientId,
@@ -65,7 +78,7 @@ export const OnlineGame = (props) => {
       board: board,
     }
     ws.send(JSON.stringify(payLoad))
-  }   
+  }
 
   useEffect(() => {
     const payLoad = {
@@ -80,66 +93,81 @@ export const OnlineGame = (props) => {
   return (
     <div className="container">
       <h1 className="title">TicTacToe</h1>
-      {clients.map((client, key) => {
-        return (
-          <div key={key}>
-            <h2>{client.name} connected!</h2>
-          </div>
-        )
-      })}
-
-      {clients.length === 2 ? (
-        <div className="start-game" onClick={handleMove}>
-          <Board
-            firstPlayer={clients[0].name}
-            secondPlayer={clients[1].name}
-            board={board}
-            setBoard={props.setBoard}
-            player={props.player}
-            setPlayer={props.setPlayer}
-          />
-          <button className="button back-button" onClick={handleBack}>
-            Back
-          </button>
-        </div>
-      ) : (
-        <div className="start-game">
-          <div className="form">
-            <PlayerForm
-              amountOfPlayers={1}
-              players={players}
-              setPlayers={props.setPlayers}
-            />
-          </div>
-
-          <div className="room-management">
-            <div className="create-room">
-              <button
-                className="button start-button"
-                onClick={handleCreateRoom}
-              >
-                Create Room
-              </button>
-            </div>
-            <div className="join-room">
-              {props.gameId === null ? <></> : <h2>Room ID: {props.gameId}</h2>}
-              <input
-                type="text"
-                placeholder="Enter Room ID"
-                onChange={handleIdInputChange}
+      <div className="game">
+        {clients.length === 2 ? (
+          <div>
+            <div className="start-game" onClick={handleMove}>
+              <Board
+                firstPlayer={clients[0].name}
+                secondPlayer={clients[1].name}
+                board={board}
+                setBoard={props.setBoard}
+                currentPlayer={props.currentPlayer}
+                setCurrentPlayer={props.setCurrentPlayer}
+                isBoardDisabled={props.isBoardDisabled}
+                handleResetGame={handleResetGame}
+                isOnline={true}
               />
-              <button className="button start-button" onClick={handleJoinGame}>
-                Join Game
-              </button>
-            </div>
-            <div className="back-button">
-              <button className="button start-button" onClick={handleBack}>
-                Back
-              </button>
+              <button className="button back-button" onClick={handleDisconnect}>
+              Back
+            </button>
             </div>
           </div>
+        ) : (
+          <div className="start-game">
+            <div className="form">
+              <PlayerForm
+                amountOfPlayers={1}
+                playerNames={playerNames}
+                setPlayerNames={props.setPlayerNames}
+              />
+            </div>
+            <div className="room-management">
+              <div className="create-room">
+                <button
+                  className="button start-button"
+                  onClick={handleCreateRoom}
+                >
+                  Create Room
+                </button>
+                {props.gameId === null ? (
+                  <></>
+                ) : (
+                  <Clipboard onClick={() => alert("Copied")} className='id-copy-button' data-clipboard-text={props.gameId}> Copy ID </Clipboard>
+                )}
+              </div>
+              <div className="join-room">
+                <input
+                  className='id-input'
+                  type="text"
+                  placeholder="Enter Room ID"
+                  onChange={handleIdInputChange}
+                />
+                <button
+                  className="button start-button"
+                  onClick={handleJoinGame}
+                >
+                  Join Game
+                </button>
+              </div>
+              <div className="back-button">
+                <button className="button start-button" onClick={handleBack}>
+                  Back
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="connected-clients">
+          {clients.map((client, key) => {
+            return (
+              <div key={key}>
+                <h4>{client.name}</h4>
+              </div>
+            )
+          })}
         </div>
-      )}
+      </div>
     </div>
   )
 }

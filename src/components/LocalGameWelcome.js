@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom'
 export const LocalGameWelcome = (props) => {
   const navigate = useNavigate()
 
-  const players = props.players;
+  const playerNames = props.playerNames
 
   const handleStartGame = () => {
-    if (players.player1 === '' || players.player2 === '') {
+    if (playerNames.player1 === '' || playerNames.player2 === '') {
       alert('Please enter player names')
       return
     }
@@ -18,27 +18,23 @@ export const LocalGameWelcome = (props) => {
     navigate('/')
   }
 
-
   return (
     <div className="container">
       <h1 className="title">TicTacToe</h1>
       <div className="start-game">
-        <PlayerForm amountOfPlayers={2} players={players} setPlayers={props.setPlayers} />
+        <PlayerForm
+          amountOfPlayers={2}
+          playerNames={playerNames}
+          setPlayerNames={props.setPlayerNames}
+        />
 
-        <button
-          className="button start-button"
-          onClick={handleStartGame}
-        >
+        <button className="button start-button" onClick={handleStartGame}>
           Start Game
         </button>
 
-        <button
-          className="button start-button"
-          onClick={handleBack}
-        >
+        <button className="button start-button" onClick={handleBack}>
           Back
         </button>
-
       </div>
     </div>
   )
