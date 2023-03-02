@@ -88,6 +88,7 @@ export const OnlineGame = (props) => {
     }
     setTimeout(() => {}, 100)
     ws.send(JSON.stringify(payLoad))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board])
 
   return (
