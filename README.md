@@ -15,4 +15,4 @@ To get started with this application, follow these steps:
 
 ## Preview 
 
-A live preview of the application is available at: https://spontaneous-mooncake-f77ba0.netlify.app/
+A live preview of the application is available at: https://tictactoe-game.herokuapp.com/ with online mode aailable.
