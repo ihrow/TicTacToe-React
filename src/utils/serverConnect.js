@@ -1,5 +1,9 @@
+// eslint-disable-next-line no-restricted-globals
+let HOST = location.origin.replace(/^http/, 'ws')
+
 export let clientId = null
-export let ws = new WebSocket('ws://localhost:8080')
+export let ws = new WebSocket(HOST)
+// export let ws = new WebSocket(`ws://localhost:3001`)
 export let gameId = null
 
 export function serverConnect(

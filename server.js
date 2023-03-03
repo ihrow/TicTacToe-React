@@ -1,37 +1,46 @@
 const { v4: uuidv4 } = require('uuid')
 const express = require('express')
-const PORT = process.env.PORT || 3001
+const WebSocket = require('ws')
+
+const PORT = process.env.PORT || 3000
 
 const app = express()
-app.use(express.static('build'))
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/build/index.html')
-})
-app.listen(PORT, () => {
-  console.log('Server is running on port 3001')
-})
-
-const http = require('http')
-const webSocketServer = require('websocket').server
-const httpServer = http.createServer()
-httpServer.listen(8080, () => {
-  console.log('Server is running on port 8080')
-})
+  .use(express.static('build'))
+  .get('/', (req, res) => {
+    res.sendFile(__dirname + '/build/index.html')
+  })
+  .listen(PORT, () => {
+    console.log('Server is running on port', PORT)
+  })
 
 const clients = {}
 const games = {}
 
-const wsServer = new webSocketServer({
-  httpServer: httpServer,
+const wsServer = new WebSocket.Server({ 
+  server: app,
 })
 
-wsServer.on('request', (request) => {
-  const connection = request.accept(null, request.origin)
+wsServer.on('listening', () => {
+  console.log('Websocket server is listening')
+})
 
-  connection.on('open', () => console.log('opened'))
-  connection.on('close', () => console.log('closed'))
-  connection.on('message', (message) => {
-    const result = JSON.parse(message.utf8Data)
+wsServer.on('connection', (ws) => {
+  const clientId = uuidv4()
+  clients[clientId] = {
+    connection: ws,
+    name: null,
+  }
+  const payLoad = {
+    method: 'connect',
+    clientId: clientId,
+  }
+  ws.send(JSON.stringify(payLoad))
+  console.log('client connected', clientId)
+
+  ws.on('message', (message) => {
+    console.log(`Received message: ${message}`)
+    const result = JSON.parse(message)
+    console.log('Received result', result)
     switch (result.method) {
       case 'create': {
         const clientId = result.clientId
@@ -57,13 +66,13 @@ wsServer.on('request', (request) => {
           playerName: result.player,
         }
 
-        const clientConnection = clients[clientId]?.connection
-        clientConnection.send(JSON.stringify(payLoad))
+        ws.send(JSON.stringify(payLoad))
 
         return
       }
       case 'join': {
         const clientId = result.clientId
+        
         clients[clientId].name = result.player
 
         const gameId = result.gameId
@@ -122,7 +131,7 @@ wsServer.on('request', (request) => {
           game: games[gameId],
           movePlayer: game.clients.filter(
             (client) => client.clientId === clientId
-            )[0]?.name,
+          )[0]?.name,
         }
 
         setTimeout(() => {
@@ -190,15 +199,8 @@ wsServer.on('request', (request) => {
     }
   })
 
-  const clientId = uuidv4()
-  clients[clientId] = {
-    connection: connection,
-  }
+  ws.on('close', () => {
+    console.log('WebSocket disconnected')
+  })
 
-  const payLoad = {
-    method: 'connect',
-    clientId: clientId,
-  }
-
-  connection.send(JSON.stringify(payLoad))
 })
